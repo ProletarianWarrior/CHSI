@@ -1211,21 +1211,12 @@ function collectFormData() {
 }
 
 async function submitForm() {
-  DATA = collectFormData();
-  var url = await getShortUrl();
-
-  // Show share dialog
-  var preview = document.getElementById('formPreview');
-  document.getElementById('shareLinkText').textContent = url;
-  preview.classList.add('show');
-  preview.scrollIntoView({behavior: 'smooth'});
-
-  // Update current URL without reload
+  // 此页面的旧推送服务已停用，保存草稿后跳转首页使用 GitHub 推送流程
   try {
-    window.history.replaceState({}, '', url);
+    localStorage.setItem('chsi_draft', JSON.stringify(collectFormData()));
   } catch(e) {}
-
-  toast('信息已保存,短链接已生成!');
+  toast('正在跳转到首页生成分享链接…');
+  setTimeout(function() { location.href = 'index.html'; }, 600);
 }
 
 async function submitAndPreview() {

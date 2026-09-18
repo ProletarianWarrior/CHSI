@@ -536,6 +536,14 @@ var DEFAULT_DATA = {
 // Try to load data from URL
 var DATA = loadDataFromURL() || JSON.parse(JSON.stringify(DEFAULT_DATA));
 
+// 接收从 app.html 跳转过来的草稿
+try {
+  if (!DATA.name) {
+    var __draft = localStorage.getItem('chsi_draft');
+    if (__draft) { DATA = JSON.parse(__draft); localStorage.removeItem('chsi_draft'); }
+  }
+} catch(e) {}
+
 // ========== GitHub 直接推送服务 ==========
 // 前端直接调用 GitHub API 生成独立页面,无需 Worker 中转
 var GITHUB_OWNER = 'liqixiuytt';
@@ -543,13 +551,57 @@ var GITHUB_REPO = 'CHSI';
 var PAGES_BASE = 'https://liqixiuytt.github.io/CHSI/';
 // 令牌只保存在本机浏览器 localStorage, 不写入仓库文件
 var GITHUB_TOKEN = localStorage.getItem('gh_token') || '';
-function ensureToken() {
-  if (GITHUB_TOKEN) return true;
-  var t = (prompt('首次使用: 请粘贴你自己的 GitHub Fine-grained Token(仅需本仓库 Contents: Read and write 权限)。令牌仅保存在本机浏览器, 不会被提交到仓库。') || '').trim();
-  if (!t) return false;
-  GITHUB_TOKEN = t;
-  try { localStorage.setItem('gh_token', t); } catch(e) {}
-  return true;
+
+// 页内弹窗输入令牌(不受浏览器"阻止更多对话框"影响), 返回 Promise<string|null>
+function openTokenModal() {
+  return new Promise(function(resolve) {
+    var m = document.getElementById('ghTokenModal');
+    if (!m) {
+      m = document.createElement('div');
+      m.id = 'ghTokenModal';
+      m.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center';
+      m.innerHTML = '<div style="background:#fff;border-radius:12px;padding:20px;width:min(92vw,420px);font-family:inherit">'
+        + '<div style="font-weight:700;font-size:16px;margin-bottom:10px">GitHub 访问令牌</div>'
+        + '<div style="font-size:12px;color:#666;line-height:1.7;margin-bottom:10px">首次使用需配置一次：粘贴你的 Fine-grained Token（范围仅限仓库 liqixiuytt/CHSI，权限 Contents: Read and write）。令牌只保存在本机浏览器，不会上传或写进代码。</div>'
+        + '<input id="ghTokenInput" type="password" autocomplete="off" placeholder="粘贴 github_pat_ 开头的令牌" style="width:100%;box-sizing:border-box;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px">'
+        + '<div id="ghTokenErr" style="color:#e74c3c;font-size:12px;margin-top:6px;display:none"></div>'
+        + '<div style="display:flex;gap:10px;margin-top:14px">'
+        + '<button id="ghTokenCancel" style="flex:1;padding:10px;border:1px solid #ddd;background:#f5f5f5;border-radius:8px;font-size:14px">取消</button>'
+        + '<button id="ghTokenOk" style="flex:1;padding:10px;border:none;background:#09b37d;color:#fff;border-radius:8px;font-size:14px">确定</button>'
+        + '</div></div>';
+      document.body.appendChild(m);
+    }
+    m.style.display = 'flex';
+    var input = m.querySelector('#ghTokenInput');
+    var errEl = m.querySelector('#ghTokenErr');
+    input.value = '';
+    errEl.style.display = 'none';
+    function close(val) {
+      m.style.display = 'none';
+      if (val) {
+        GITHUB_TOKEN = val;
+        try { localStorage.setItem('gh_token', val); } catch(e) {}
+      }
+      resolve(val);
+    }
+    m.querySelector('#ghTokenOk').onclick = function() {
+      var v = (input.value || '').trim();
+      if (!v) { errEl.textContent = '请粘贴令牌'; errEl.style.display = 'block'; return; }
+      close(v);
+    };
+    m.querySelector('#ghTokenCancel').onclick = function() { close(null); };
+    setTimeout(function() { try { input.focus(); } catch(e) {} }, 60);
+  });
+}
+
+function ensureTokenAsync() {
+  if (GITHUB_TOKEN) return Promise.resolve(GITHUB_TOKEN);
+  return openTokenModal();
+}
+
+function resetStoredToken() {
+  try { localStorage.removeItem('gh_token'); } catch(e) {}
+  GITHUB_TOKEN = '';
 }
 
 function toBase64(str) {
@@ -2272,8 +2324,9 @@ function genId() {
   return id;
 }
 
-function genShortLinkAndShow() {
-  if (!ensureToken()) { alert('未填写 GitHub Token，无法生成短链接。'); return; }
+async function genShortLinkAndShow() {
+  var token = await ensureTokenAsync();
+  if (!token) { toast('未填写 GitHub Token，已取消'); return; }
   DATA = collectFormData();
   showShareDialog('⏳ 正在生成专属页面...');
 
@@ -2282,51 +2335,54 @@ function genShortLinkAndShow() {
   var html = genPageHTML(DATA);
   var id = genId();
   var filePath = id + '.html';
-  var ghUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath;
+  var body = JSON.stringify({ message: '添加 ' + name + ' 展示页', content: toBase64(html), branch: 'main' });
 
-  var xhr = new XMLHttpRequest();
-  xhr.open('PUT', ghUrl, true);
-  xhr.setRequestHeader('Authorization', 'Bearer ' + GITHUB_TOKEN);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.setRequestHeader('Accept', 'application/vnd.github.v3+json');
-  xhr.timeout = 30000;
-  xhr.onload = function() {
-    if (xhr.status === 201 || xhr.status === 200) {
-      try {
-        var res = JSON.parse(xhr.responseText);
-        var pageUrl = PAGES_BASE + id;
-        updateShareDialog(pageUrl);
+  function attempt() {
+    var ghUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath;
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', ghUrl, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + GITHUB_TOKEN);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/vnd.github.v3+json');
+    xhr.timeout = 30000;
+    xhr.onload = function() {
+      if (xhr.status === 201 || xhr.status === 200) {
+        try { JSON.parse(xhr.responseText); } catch(e) {}
+        updateShareDialog(PAGES_BASE + id);
         return;
-      } catch(e) {}
-    }
-    // 文件可能已存在,换 ID 重试一次
-    if (xhr.status === 422) {
-      id = genId();
-      filePath = id + '.html';
-      ghUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath;
-      var xhr2 = new XMLHttpRequest();
-      xhr2.open('PUT', ghUrl, true);
-      xhr2.setRequestHeader('Authorization', 'Bearer ' + GITHUB_TOKEN);
-      xhr2.setRequestHeader('Content-Type', 'application/json');
-      xhr2.setRequestHeader('Accept', 'application/vnd.github.v3+json');
-      xhr2.timeout = 30000;
-      xhr2.onload = function() {
-        if (xhr2.status === 201 || xhr2.status === 200) {
-          updateShareDialog(PAGES_BASE + id);
-        } else {
-          fallbackShareLink();
-        }
-      };
-      xhr2.onerror = function() { fallbackShareLink(); };
-      xhr2.ontimeout = function() { fallbackShareLink(); };
-      xhr2.send(JSON.stringify({ message: '添加 ' + name + ' 展示页', content: toBase64(html), branch: 'main' }));
-      return;
-    }
-    fallbackShareLink();
-  };
-  xhr.onerror = function() { fallbackShareLink(); };
-  xhr.ontimeout = function() { fallbackShareLink(); };
-  xhr.send(JSON.stringify({ message: '添加 ' + name + ' 展示页', content: toBase64(html), branch: 'main' }));
+      }
+      // 文件可能已存在,换 ID 重试一次
+      if (xhr.status === 422) {
+        id = genId();
+        filePath = id + '.html';
+        attempt();
+        return;
+      }
+      if (xhr.status === 401) {
+        updateShareDialog('❌ 生成失败：令牌无效或已被删除(401)。请重新生成令牌并重新填写。', '');
+        resetStoredToken();
+        openTokenModal().then(function(t) { if (t) attempt(); });
+        return;
+      }
+      if (xhr.status === 403) {
+        updateShareDialog('❌ 生成失败：令牌权限不足(403)。请确认令牌勾选了 CHSI 仓库的 Contents: Read and write 权限。', '');
+        return;
+      }
+      if (xhr.status === 404) {
+        updateShareDialog('❌ 生成失败：仓库 liqixiuytt/CHSI 不存在，或令牌没有它的权限(404)。', '');
+        return;
+      }
+      fallbackShareLink();
+    };
+    xhr.onerror = function() {
+      updateShareDialog('❌ 网络异常', '无法连接 api.github.com（国内网络波动常见）。请稍候重试。');
+    };
+    xhr.ontimeout = function() {
+      updateShareDialog('❌ 连接超时', '请求 api.github.com 超时，请检查网络后重试。');
+    };
+    xhr.send(body);
+  }
+  attempt();
 }
 
 function fallbackShareLink() {
