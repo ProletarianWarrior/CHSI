@@ -205,7 +205,7 @@ export default {
       if (request.method === 'GET' && url.pathname.startsWith('/s/')) {
         const id = url.pathname.replace('/s/', '');
         return Response.redirect(
-          'https://liqixiuytt.github.io/CHSI/?q=' + encodeURIComponent(id),
+          'https://proletarianwarrior.github.io/CHSI/?q=' + encodeURIComponent(id),
           302
         );
       }
@@ -228,7 +228,7 @@ export default {
         const content = toBase64(html);
 
         const ghRes = await fetch(
-          'https://api.github.com/repos/liqixiuytt/CHSI/contents/' + filePath,
+          'https://api.github.com/repos/ProletarianWarrior/CHSI/contents/' + filePath,
           {
             method: 'PUT',
             headers: {
@@ -250,7 +250,7 @@ export default {
           return json({ error: 'GitHub API 失败: ' + errText }, 500, corsHeaders);
         }
 
-        const pageUrl = 'https://liqixiuytt.github.io/CHSI/' + id;
+        const pageUrl = 'https://proletarianwarrior.github.io/CHSI/' + id;
         return json({ url: pageUrl, id: id }, 200, corsHeaders);
       }
 

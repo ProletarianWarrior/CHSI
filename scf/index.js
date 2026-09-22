@@ -2,7 +2,7 @@
 // 环境变量: GITHUB_TOKEN (Personal Access Token, 需 repo 权限)
 const https = require('https');
 
-const GITHUB_OWNER = 'liqixiuytt';
+const GITHUB_OWNER = 'ProletarianWarrior';
 const GITHUB_REPO = 'CHSI';
 const GITHUB_BRANCH = 'main';
 
