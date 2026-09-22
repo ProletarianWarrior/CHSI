@@ -39,6 +39,9 @@ const sharp = require('sharp');
   // 构造数据对象（与 collectFormData 字段对齐）
   const data = {
     name: '施家豪',
+    valid_days: 30,
+    expire_time: 0,
+    create_time: Date.now(),
     gender: '男',
     nation: '汉族',
     id_number: '420625200310016812',

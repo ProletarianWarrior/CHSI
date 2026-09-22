@@ -196,6 +196,11 @@ body:has(#pg3.active),body.on-pg3{background:var(--white)}
 .grad-type-tabs{display:flex;gap:8px;margin-bottom:14px}
 .grad-type-tab{flex:1;text-align:center;padding:10px 0;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;color:var(--text-gray);transition:all .2s}
 .grad-type-tab.active{border-color:var(--blue);color:var(--blue);background:#f0f4ff}
+.validity-section{background:var(--white);border-radius:12px;padding:16px;margin-bottom:12px}
+.validity-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.validity-tabs{display:flex;gap:8px}
+.validity-tab{flex:1;text-align:center;padding:9px 0;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;color:var(--text-gray);transition:all .2s;font-weight:500}
+.validity-tab.active{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);font-weight:700}
 .upload-row{display:flex;gap:8px;align-items:center}
 .upload-input{flex:1}
 .upload-btn{width:44px;height:44px;border:2px dashed #ccc;border-radius:10px;background:#fafafa;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
@@ -482,11 +487,27 @@ body:has(#pg3.active),body.on-pg3{background:var(--white)}
     </div>
   </div>
 
+    <div class="validity-section">
+    <div class="validity-title">
+      <span>⏱️ 链接有效期</span>
+      <span style="font-size:11px;font-weight:normal;color:var(--text-gray)">(到期后链接自动失效)</span>
+    </div>
+    <div class="validity-tabs" id="validityTabs">
+      <div class="validity-tab" data-days="7" onclick="selectValidity(7)">7天</div>
+      <div class="validity-tab" data-days="15" onclick="selectValidity(15)">15天</div>
+      <div class="validity-tab active" data-days="30" onclick="selectValidity(30)">30天</div>
+      <div class="validity-tab" data-days="0" onclick="selectValidity(0)">永久有效</div>
+    </div>
+  </div>
+
   <button class="form-submit" onclick="submitForm()">✅ 保存信息并生成分享链接</button>
   <button class="form-submit secondary" style="margin-top:8px" onclick="submitAndPreview()">👁️ 预览效果</button>
   <button class="form-submit secondary" style="margin-top:8px;background:#28a745" onclick="openReport()">📄 查看电子注册备案表</button>
 
   <div class="form-preview" id="formPreview">
+    <div id="expireTipWrap" style="background:#f6ffed;border:1px solid #b7eb8f;border-radius:6px;padding:7px 10px;margin-bottom:12px;font-size:12px;color:#389e0d;display:flex;align-items:center;gap:6px">
+      <span id="expireTipText">⏱️ 有效期：30天</span>
+    </div>
     <div class="form-preview-title">🔗 TinyURL 短链接 <span id="shortLinkSpinner" style="font-size:11px;color:#999;font-weight:normal">(缩短中...)</span></div>
     <div class="form-preview-link" id="shortLinkText"></div>
     <div id="shortLinkWrap">
@@ -509,6 +530,24 @@ body:has(#pg3.active),body.on-pg3{background:var(--white)}
 </div>
 
 <!-- Toast -->
+<!-- ============ EXPIRED VIEW ============ -->
+<div id="expiredView" style="display:none;min-height:100vh;background:#fff;padding:80px 24px 40px;text-align:center;box-sizing:border-box">
+  <div style="width:72px;height:72px;background:#fff2f0;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center">
+    <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#ff4d4f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+  </div>
+  <div style="font-size:19px;font-weight:700;color:#1f1f1f;margin-bottom:12px">该分享链接已过有效期</div>
+  <div id="expiredDesc" style="font-size:13px;color:#8c8c8c;line-height:1.7;max-width:320px;margin:0 auto 30px">
+    根据分享者设置，本档案查询链接已失效。<br>如需查看最新学籍档案，请联系本人重新获取分享链接。
+  </div>
+  <div style="border-top:1px solid #f0f0f0;padding-top:24px;font-size:12px;color:#bfbfbf">
+    中国高等教育学生信息网（学信网）
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -817,6 +856,11 @@ body:has(#pg3.active),body.on-pg3{background:var(--white)}
 .grad-type-tabs{display:flex;gap:8px;margin-bottom:14px}
 .grad-type-tab{flex:1;text-align:center;padding:10px 0;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;color:var(--text-gray);transition:all .2s}
 .grad-type-tab.active{border-color:var(--blue);color:var(--blue);background:#f0f4ff}
+.validity-section{background:var(--white);border-radius:12px;padding:16px;margin-bottom:12px}
+.validity-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.validity-tabs{display:flex;gap:8px}
+.validity-tab{flex:1;text-align:center;padding:9px 0;border-radius:8px;border:1.5px solid #ddd;font-size:13px;cursor:pointer;color:var(--text-gray);transition:all .2s;font-weight:500}
+.validity-tab.active{border-color:var(--primary);color:var(--primary);background:var(--primary-bg);font-weight:700}
 .upload-row{display:flex;gap:8px;align-items:center}
 .upload-input{flex:1}
 .upload-btn{width:44px;height:44px;border:2px dashed #ccc;border-radius:10px;background:#fafafa;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
@@ -1103,11 +1147,27 @@ body:has(#pg3.active),body.on-pg3{background:var(--white)}
     </div>
   </div>
 
+    <div class="validity-section">
+    <div class="validity-title">
+      <span>⏱️ 链接有效期</span>
+      <span style="font-size:11px;font-weight:normal;color:var(--text-gray)">(到期后链接自动失效)</span>
+    </div>
+    <div class="validity-tabs" id="validityTabs">
+      <div class="validity-tab" data-days="7" onclick="selectValidity(7)">7天</div>
+      <div class="validity-tab" data-days="15" onclick="selectValidity(15)">15天</div>
+      <div class="validity-tab active" data-days="30" onclick="selectValidity(30)">30天</div>
+      <div class="validity-tab" data-days="0" onclick="selectValidity(0)">永久有效</div>
+    </div>
+  </div>
+
   <button class="form-submit" onclick="submitForm()">✅ 保存信息并生成分享链接</button>
   <button class="form-submit secondary" style="margin-top:8px" onclick="submitAndPreview()">👁️ 预览效果</button>
   <button class="form-submit secondary" style="margin-top:8px;background:#28a745" onclick="openReport()">📄 查看电子注册备案表</button>
 
   <div class="form-preview" id="formPreview">
+    <div id="expireTipWrap" style="background:#f6ffed;border:1px solid #b7eb8f;border-radius:6px;padding:7px 10px;margin-bottom:12px;font-size:12px;color:#389e0d;display:flex;align-items:center;gap:6px">
+      <span id="expireTipText">⏱️ 有效期：30天</span>
+    </div>
     <div class="form-preview-title">🔗 TinyURL 短链接 <span id="shortLinkSpinner" style="font-size:11px;color:#999;font-weight:normal">(缩短中...)</span></div>
     <div class="form-preview-link" id="shortLinkText"></div>
     <div id="shortLinkWrap">
@@ -1130,6 +1190,24 @@ body:has(#pg3.active),body.on-pg3{background:var(--white)}
 </div>
 
 <!-- Toast -->
+<!-- ============ EXPIRED VIEW ============ -->
+<div id="expiredView" style="display:none;min-height:100vh;background:#fff;padding:80px 24px 40px;text-align:center;box-sizing:border-box">
+  <div style="width:72px;height:72px;background:#fff2f0;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center">
+    <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#ff4d4f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+  </div>
+  <div style="font-size:19px;font-weight:700;color:#1f1f1f;margin-bottom:12px">该分享链接已过有效期</div>
+  <div id="expiredDesc" style="font-size:13px;color:#8c8c8c;line-height:1.7;max-width:320px;margin:0 auto 30px">
+    根据分享者设置，本档案查询链接已失效。<br>如需查看最新学籍档案，请联系本人重新获取分享链接。
+  </div>
+  <div style="border-top:1px solid #f0f0f0;padding-top:24px;font-size:12px;color:#bfbfbf">
+    中国高等教育学生信息网（学信网）
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1277,6 +1355,16 @@ function updateShareDialog(shortUrl, fullUrl) {
   document.getElementById('shortLinkSpinner').style.display = 'none';
   document.getElementById('shortLinkWrap').style.display = '';
   document.getElementById('fullLinkText').textContent = fullUrl || shortUrl;
+  var tipEl = document.getElementById('expireTipText');
+  if (tipEl) {
+    if (DATA && DATA.expire_time && DATA.expire_time > 0) {
+      var expD = new Date(DATA.expire_time);
+      var expStr = expD.getFullYear() + '-' + String(expD.getMonth() + 1).padStart(2, '0') + '-' + String(expD.getDate()).padStart(2, '0') + ' ' + String(expD.getHours()).padStart(2, '0') + ':' + String(expD.getMinutes()).padStart(2, '0');
+      tipEl.textContent = '⏱️ 有效期：' + (DATA.valid_days || 30) + '天（至 ' + expStr + ' 失效）';
+    } else {
+      tipEl.textContent = '⏱️ 有效期：永久有效';
+    }
+  }
 }
 
 function genShareLink() {
@@ -1803,6 +1891,9 @@ document.getElementById('levelTabs').addEventListener('click', function(e) {
 // ========== FORM HANDLING (PG4) ==========
 function populateForm() {
   var d = DATA;
+  if (typeof d.valid_days !== 'undefined') {
+    selectValidity(d.valid_days);
+  }
   setVal('fName', d.name);
   setVal('fGender', d.gender);
   setVal('fNation', d.nation);
@@ -1914,8 +2005,23 @@ function switchGradTypeUI(type) {
   if (toggleTitle) toggleTitle.textContent = '📚 ' + type + '研究生信息 (可选)';
 }
 
+var selectedValidityDays = 30;
+function selectValidity(days) {
+  selectedValidityDays = parseInt(days);
+  document.querySelectorAll('#validityTabs .validity-tab').forEach(function(el) {
+    el.classList.toggle('active', parseInt(el.getAttribute('data-days')) === selectedValidityDays);
+  });
+}
+
 function collectFormData() {
   var d = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  d.valid_days = selectedValidityDays;
+  d.create_time = Date.now();
+  if (selectedValidityDays > 0) {
+    d.expire_time = Date.now() + selectedValidityDays * 24 * 60 * 60 * 1000;
+  } else {
+    d.expire_time = 0;
+  }
 
   // Basic info
   d.name = getVal('fName');
@@ -2086,7 +2192,31 @@ function loadFromShortCode(id) {
   }
   if (!shortId) shortId = params.get('s');
 
-  function runInit() {
+  function checkExpiry() {
+  if (DATA && DATA.expire_time && DATA.expire_time > 0) {
+    if (Date.now() > DATA.expire_time) {
+      var pages = document.querySelectorAll('.page');
+      pages.forEach(function(p) { p.style.display = 'none'; });
+      var editBar = document.getElementById('editBar');
+      if (editBar) editBar.style.display = 'none';
+      var expiredView = document.getElementById('expiredView');
+      if (expiredView) {
+        expiredView.style.display = 'block';
+        var expDate = new Date(DATA.expire_time);
+        var expStr = expDate.getFullYear() + '年' + (expDate.getMonth() + 1) + '月' + expDate.getDate() + '日 ' + String(expDate.getHours()).padStart(2, '0') + ':' + String(expDate.getMinutes()).padStart(2, '0');
+        var descEl = document.getElementById('expiredDesc');
+        if (descEl) {
+          descEl.innerHTML = '根据分享者设置，本档案查询链接已于 <span style="color:#333;font-weight:600">' + expStr + '</span> 失效。<br>如需查看最新学籍档案，请联系本人重新获取分享链接。';
+        }
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
+function runInit() {
+    if (checkExpiry()) return;
     // g.html 独立展示页: 始终隐藏编辑按钮栏
     var editBar = document.getElementById('editBar');
     if (editBar) editBar.style.display = 'none';
@@ -2300,6 +2430,16 @@ function updateShareDialog(shortUrl, fullUrl) {
   document.getElementById('shortLinkSpinner').style.display = 'none';
   document.getElementById('shortLinkWrap').style.display = '';
   document.getElementById('fullLinkText').textContent = fullUrl || shortUrl;
+  var tipEl = document.getElementById('expireTipText');
+  if (tipEl) {
+    if (DATA && DATA.expire_time && DATA.expire_time > 0) {
+      var expD = new Date(DATA.expire_time);
+      var expStr = expD.getFullYear() + '-' + String(expD.getMonth() + 1).padStart(2, '0') + '-' + String(expD.getDate()).padStart(2, '0') + ' ' + String(expD.getHours()).padStart(2, '0') + ':' + String(expD.getMinutes()).padStart(2, '0');
+      tipEl.textContent = '⏱️ 有效期：' + (DATA.valid_days || 30) + '天（至 ' + expStr + ' 失效）';
+    } else {
+      tipEl.textContent = '⏱️ 有效期：永久有效';
+    }
+  }
 }
 
 function genShareLink() {
@@ -2889,6 +3029,9 @@ document.getElementById('levelTabs').addEventListener('click', function(e) {
 // ========== FORM HANDLING (PG4) ==========
 function populateForm() {
   var d = DATA;
+  if (typeof d.valid_days !== 'undefined') {
+    selectValidity(d.valid_days);
+  }
   setVal('fName', d.name);
   setVal('fGender', d.gender);
   setVal('fNation', d.nation);
@@ -3000,8 +3143,23 @@ function switchGradTypeUI(type) {
   if (toggleTitle) toggleTitle.textContent = '📚 ' + type + '研究生信息 (可选)';
 }
 
+var selectedValidityDays = 30;
+function selectValidity(days) {
+  selectedValidityDays = parseInt(days);
+  document.querySelectorAll('#validityTabs .validity-tab').forEach(function(el) {
+    el.classList.toggle('active', parseInt(el.getAttribute('data-days')) === selectedValidityDays);
+  });
+}
+
 function collectFormData() {
   var d = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  d.valid_days = selectedValidityDays;
+  d.create_time = Date.now();
+  if (selectedValidityDays > 0) {
+    d.expire_time = Date.now() + selectedValidityDays * 24 * 60 * 60 * 1000;
+  } else {
+    d.expire_time = 0;
+  }
 
   // Basic info
   d.name = getVal('fName');
