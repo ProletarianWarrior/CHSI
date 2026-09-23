@@ -65,6 +65,8 @@ const sharp = require('sharp');
     li_yue: 6,
     li_ri: 30,
     zhuangtai: '在籍(注册学籍)',
+    principal: '毛小兵',
+    diploma_no: '1344 1120 2605 0038 98',
     image_a: imageA,
     image_b: '',
     has_grad: false,
