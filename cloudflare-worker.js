@@ -240,7 +240,7 @@ export default {
             body: JSON.stringify({
               message: '添加 ' + data.name + ' 展示页',
               content: content,
-              branch: 'main'
+              branch: 'v2.3'
             })
           }
         );

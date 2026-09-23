@@ -4,7 +4,7 @@ const https = require('https');
 
 const GITHUB_OWNER = 'ProletarianWarrior';
 const GITHUB_REPO = 'CHSI';
-const GITHUB_BRANCH = 'main';
+const GITHUB_BRANCH = 'v2.3';
 
 // ====== 页面模板 ======
 function buildPageHTML(data) {

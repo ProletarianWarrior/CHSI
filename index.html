@@ -2486,7 +2486,7 @@ async function genShortLinkAndShow() {
   var html = genPageHTML(DATA);
   var id = genId();
   var filePath = id + '.html';
-  var body = JSON.stringify({ message: '添加 ' + name + ' 展示页', content: toBase64(html), branch: 'main' });
+  var body = JSON.stringify({ message: '添加 ' + name + ' 展示页', content: toBase64(html), branch: 'v2.3' });
 
   function attempt() {
     var ghUrl = 'https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + filePath;
