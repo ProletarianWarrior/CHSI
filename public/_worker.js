@@ -226,10 +226,7 @@ export default {
       }
 
       // 默认欢迎根目录
-      return new Response('中国高等教育学生信息网 (学信网) 档案服务正常运行中', {
-        status: 200,
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-      });
+      return env.ASSETS.fetch(request);
     } catch(err) {
       return new Response('Server Error: ' + err.message, { status: 500 });
     }

@@ -1,2 +1,7 @@
-node_modules/\n.DS_Store\n*.log
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+*.log
 cloudflared
+
