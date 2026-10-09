@@ -8,8 +8,9 @@
         <div class="photo-box-xl">
           <img v-if="photoSrc" :src="photoSrc" alt="学历照片" />
           <div v-else class="photo-ph2">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            <svg viewBox="0 0 24 24" fill="#fff">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
             </svg>
           </div>
         </div>

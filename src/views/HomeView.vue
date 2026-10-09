@@ -1,7 +1,7 @@
 <template>
   <div class="page pg1">
     <!-- 顶部导航 -->
-    <NavBar title="学信档案" :show-back="false" theme="green">
+    <NavBar title="学信档案" :show-back="false" theme="green" @menu-click="pwaModalVisible = true">
       <template #left>
         <svg class="nb-icon" viewBox="0 0 1024 1024" fill="#fff" width="28" height="28">
           <path d="M819.2 143.018667L753.493333 102.4l-81.92 49.152L573.013333 102.4 491.52 151.552 409.941333 102.4l-81.92 49.152L246.613333 102.4 204.8 133.973333V785.066667l41.813333 30.72 81.92-49.152L409.941333 819.2l81.578667-49.152L573.013333 819.2l81.578667-51.2L736.426667 819.2l81.578666-49.152L819.2 785.066667z"/>
@@ -93,6 +93,12 @@
       :expire-time="profile.expire_time"
       @close="shareModalVisible = false"
     />
+
+    <!-- 右上角三条横杠触发：添加到手机桌面 PWA 引导弹窗 -->
+    <PwaInstallModal
+      :visible="pwaModalVisible"
+      @close="pwaModalVisible = false"
+    />
   </div>
 </template>
 
@@ -105,11 +111,13 @@ import { saveProfileToServer, getWorkerBaseUrl } from '../utils/api'
 import NavBar from '../components/NavBar.vue'
 import TabBar from '../components/TabBar.vue'
 import ShareModal from '../components/ShareModal.vue'
+import PwaInstallModal from '../components/PwaInstallModal.vue'
 import { showToast } from '../components/Toast.vue'
 
 const router = useRouter()
 const { profile, isShareMode } = useProfile()
 
+const pwaModalVisible = ref(false)
 const shareModalVisible = ref(false)
 const shareShortUrl = ref('')
 const shareFullUrl = ref('')
