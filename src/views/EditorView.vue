@@ -234,10 +234,10 @@
         </div>
       </div>
 
-      <!-- 4. 照片上传 (原图无损) -->
+      <!-- 4. 照片上传 (等比保真优化) -->
       <div class="form-section">
         <div class="form-section-title">
-          <span class="icon">📷</span> 照片上传
+          <span class="icon">📷</span> 照片上传 (等比保真优化)
         </div>
         <div class="photo-upload-grid">
           <!-- 录取照片 -->
@@ -369,17 +369,57 @@ const triggerUpload = (id: string) => {
   document.getElementById(id)?.click()
 }
 
-// 原始图片直接读取，取消自动压缩，保留原图
+// 纯前端 Canvas 保真等比压缩 (严格保持原图比例，仅优化画质体积)
 const handleFileSelect = (e: Event, field: 'image_a' | 'image_b') => {
-  const file = (e.target as HTMLInputElement).files?.[0]
+  const inputEl = e.target as HTMLInputElement
+  const file = inputEl.files?.[0]
   if (!file) return
 
   const reader = new FileReader()
   reader.onload = (loadEvt) => {
-    formData.value[field] = loadEvt.target?.result as string
-    showToast('照片上传完成')
+    const rawData = loadEvt.target?.result as string
+    const img = new Image()
+    img.onload = () => {
+      let w = img.naturalWidth || img.width
+      let h = img.naturalHeight || img.height
+      const maxDim = 800 // 保持视网膜高清展示的最大边长
+
+      // 严格按照原图宽高比等比例缩放，绝不拉伸变形
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w)
+          w = maxDim
+        } else {
+          w = Math.round((w * maxDim) / h)
+          h = maxDim
+        }
+      }
+
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (ctx) {
+        ctx.imageSmoothingEnabled = true
+        ctx.imageSmoothingQuality = 'high'
+        ctx.drawImage(img, 0, 0, w, h)
+        // 质量 0.8 导出为 jpeg，体积大幅降低至几十 KB，彻底消除 1102 报错
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8)
+        formData.value[field] = compressedBase64
+        showToast('照片处理完成')
+      } else {
+        formData.value[field] = rawData
+        showToast('照片上传完成')
+      }
+    }
+    img.onerror = () => {
+      formData.value[field] = rawData
+      showToast('照片上传完成')
+    }
+    img.src = rawData
   }
   reader.readAsDataURL(file)
+  inputEl.value = ''
 }
 
 const normalizeDates = () => {
