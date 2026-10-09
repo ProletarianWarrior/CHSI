@@ -234,10 +234,10 @@
         </div>
       </div>
 
-      <!-- 4. 照片上传 (本地压缩) -->
+      <!-- 4. 照片上传 (原图无损) -->
       <div class="form-section">
         <div class="form-section-title">
-          <span class="icon">📷</span> 照片上传 (自动压缩至最佳比例)
+          <span class="icon">📷</span> 照片上传
         </div>
         <div class="photo-upload-grid">
           <!-- 录取照片 -->
@@ -369,28 +369,15 @@ const triggerUpload = (id: string) => {
   document.getElementById(id)?.click()
 }
 
-// 纯前端 Canvas 图片等比压缩
+// 原始图片直接读取，取消自动压缩，保留原图
 const handleFileSelect = (e: Event, field: 'image_a' | 'image_b') => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
 
   const reader = new FileReader()
   reader.onload = (loadEvt) => {
-    const img = new Image()
-    img.onload = () => {
-      const canvas = document.createElement('canvas')
-      // 保持与之前 sharp 一致的比例 200x240
-      canvas.width = 200
-      canvas.height = 240
-      const ctx = canvas.getContext('2d')
-      if (ctx) {
-        ctx.drawImage(img, 0, 0, 200, 240)
-        const base64 = canvas.toDataURL('image/jpeg', 0.75)
-        formData.value[field] = base64
-        showToast('照片压缩处理完成')
-      }
-    }
-    img.src = loadEvt.target?.result as string
+    formData.value[field] = loadEvt.target?.result as string
+    showToast('照片上传完成')
   }
   reader.readAsDataURL(file)
 }
@@ -446,253 +433,4 @@ const openShareDialog = async () => {
 }
 </script>
 
-<style scoped>
-.pg4 {
-  background: var(--bg);
-  min-height: 100vh;
-  padding-bottom: 60px;
-}
-.form-container {
-  padding: 12px 14px;
-}
-.form-section {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-.form-section-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 14px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #f0f0f0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.form-section-title .icon {
-  font-size: 18px;
-}
-.form-row {
-  display: flex;
-  gap: 10px;
-}
-.form-group {
-  margin-bottom: 12px;
-  flex: 1;
-}
-.form-label {
-  font-size: 13px;
-  color: var(--text);
-  margin-bottom: 6px;
-  display: block;
-  font-weight: 500;
-}
-.form-label .req {
-  color: var(--red);
-}
-.form-input, .form-select {
-  width: 100%;
-  height: 40px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0 12px;
-  font-size: 14px;
-  color: var(--text);
-  background: #fafafa;
-  outline: none;
-  transition: border .2s;
-  box-sizing: border-box;
-}
-.form-input:focus, .form-select:focus {
-  border-color: var(--primary);
-  background: #fff;
-}
-.date-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.date-input {
-  text-align: center;
-}
-.date-sep {
-  color: #999;
-}
-.toggle-section {
-  background: var(--white);
-  border-radius: 12px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-.toggle-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  cursor: pointer;
-}
-.toggle-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.toggle-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-.toggle-hint {
-  font-size: 11px;
-  color: var(--text-gray);
-}
-.toggle-arrow {
-  font-size: 13px;
-  color: #aaa;
-  transition: transform .25s;
-}
-.toggle-section.open .toggle-arrow {
-  transform: rotate(90deg);
-}
-.toggle-body {
-  padding: 0 16px 16px;
-}
-.grad-type-tabs {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-.grad-type-tab {
-  flex: 1;
-  text-align: center;
-  padding: 8px 0;
-  border-radius: 8px;
-  border: 1.5px solid #ddd;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--text-gray);
-}
-.grad-type-tab.active {
-  border-color: var(--blue);
-  color: var(--blue);
-  background: #f0f4ff;
-  font-weight: 700;
-}
-.photo-upload-grid {
-  display: flex;
-  gap: 16px;
-  justify-content: space-around;
-  padding: 8px 0;
-}
-.photo-uploader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-.uploader-preview {
-  width: 90px;
-  height: 115px;
-  border: 1.5px dashed #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fafafa;
-  cursor: pointer;
-}
-.uploader-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.uploader-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  color: #999;
-  font-size: 22px;
-}
-.uploader-placeholder .txt {
-  font-size: 11px;
-}
-.hide-file {
-  display: none;
-}
-.uploader-label {
-  font-size: 12px;
-  color: #666;
-}
-.validity-section {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-}
-.validity-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.validity-sub {
-  font-size: 11px;
-  font-weight: 400;
-  color: #999;
-}
-.validity-tabs {
-  display: flex;
-  gap: 8px;
-}
-.validity-tab {
-  flex: 1;
-  text-align: center;
-  padding: 9px 0;
-  border-radius: 8px;
-  border: 1.5px solid #ddd;
-  font-size: 13px;
-  cursor: pointer;
-  color: var(--text-gray);
-  transition: all .2s;
-  font-weight: 500;
-}
-.validity-tab.active {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-bg);
-  font-weight: 700;
-}
-.form-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
-}
-.form-submit {
-  width: 100%;
-  height: 46px;
-  background: var(--primary);
-  border: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-}
-.form-submit:active {
-  opacity: .85;
-}
-.form-submit.secondary {
-  background: var(--blue);
-}
-</style>
+<style lang="scss" scoped src="./EditorView.scss"></style>

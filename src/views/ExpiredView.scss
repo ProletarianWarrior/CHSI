@@ -1,0 +1,46 @@
+.expired-page {
+  min-height: 100vh;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.expired-card {
+  margin: 40px 16px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 36px 20px 30px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+.expired-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.expired-title {
+  font-size: 19px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 12px;
+}
+.expired-desc {
+  font-size: 13px;
+  color: #8c8c8c;
+  line-height: 1.7;
+  max-width: 300px;
+  margin: 0 auto 30px;
+}
+.expired-btn {
+  width: 100%;
+  max-width: 240px;
+  height: 42px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.expired-btn:active {
+  opacity: 0.85;
+}
