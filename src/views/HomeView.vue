@@ -1,7 +1,7 @@
 <template>
   <div class="page pg1">
-    <!-- 顶部导航 -->
-    <NavBar title="学信档案" :show-back="false" theme="green" @menu-click="pwaModalVisible = true">
+    <!-- 顶部导航：支持连续点击3次触发暗号认证 -->
+    <NavBar title="学信档案" :show-back="false" theme="green" @menu-click="pwaModalVisible = true" @title-click="handleTitleClick">
       <template #left>
         <svg class="nb-icon" viewBox="0 0 1024 1024" fill="#fff" width="28" height="28">
           <path d="M819.2 143.018667L753.493333 102.4l-81.92 49.152L573.013333 102.4 491.52 151.552 409.941333 102.4l-81.92 49.152L246.613333 102.4 204.8 133.973333V785.066667l41.813333 30.72 81.92-49.152L409.941333 819.2l81.578667-49.152L573.013333 819.2l81.578667-51.2L736.426667 819.2l81.578666-49.152L819.2 785.066667z"/>
@@ -24,8 +24,8 @@
       <button class="rec-btn">去测评</button>
     </div>
 
-    <!-- 管理员操作栏 (分享链接打开时强制彻底隐藏，无修改权限) -->
-    <div v-if="!isShareMode" id="editBar" class="share-bar">
+    <!-- 管理员操作栏 (仅管理员可见，彻底防止普通访客穿帮) -->
+    <div v-if="isAdmin" id="editBar" class="share-bar">
       <button class="rec-btn blue" @click="goToEdit">📝 填写/编辑信息</button>
       <button class="rec-btn outline" @click="openShare">🔗 生成分享链接</button>
     </div>
@@ -99,28 +99,62 @@
       :visible="pwaModalVisible"
       @close="pwaModalVisible = false"
     />
+
+    <!-- 连续点击标题触发：管理员口令验证弹窗 -->
+    <AdminAuthModal
+      :visible="authModalVisible"
+      @close="authModalVisible = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProfile } from '../composables/useProfile'
+import { useAuth } from '../composables/useAuth'
 import { buildShareLinks } from '../utils/codec'
 import { saveProfileToServer, getWorkerBaseUrl } from '../utils/api'
 import NavBar from '../components/NavBar.vue'
 import TabBar from '../components/TabBar.vue'
 import ShareModal from '../components/ShareModal.vue'
 import PwaInstallModal from '../components/PwaInstallModal.vue'
+import AdminAuthModal from '../components/AdminAuthModal.vue'
 import { showToast } from '../components/Toast.vue'
 
 const router = useRouter()
-const { profile, isShareMode } = useProfile()
+const { profile } = useProfile()
+const { isAdmin, checkUrlToken } = useAuth()
 
 const pwaModalVisible = ref(false)
 const shareModalVisible = ref(false)
+const authModalVisible = ref(false)
 const shareShortUrl = ref('')
 const shareFullUrl = ref('')
+
+// 连续快速点击3次标题触发暗号输入弹窗
+let titleClickCount = 0
+let titleClickTimer: any = null
+
+const handleTitleClick = () => {
+  titleClickCount++
+  if (titleClickTimer) clearTimeout(titleClickTimer)
+
+  if (titleClickCount >= 3) {
+    titleClickCount = 0
+    authModalVisible.value = true
+    return
+  }
+
+  titleClickTimer = setTimeout(() => {
+    titleClickCount = 0
+  }, 1200)
+}
+
+onMounted(() => {
+  // 支持 URL 参数直通免密认证 (?token=chsi888)
+  checkUrlToken()
+})
 
 const goToEdu = () => {
   router.push('/education')

@@ -11,7 +11,7 @@
         <slot name="left"></slot>
       </div>
 
-      <span class="nb-title" :style="{ color: theme === 'green' ? '#fff' : '#000' }">
+      <span class="nb-title" :style="{ color: theme === 'green' ? '#fff' : '#000' }" @click="$emit('title-click')">
         {{ title }}
       </span>
 
@@ -45,6 +45,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: 'back'): void
   (e: 'menu-click'): void
+  (e: 'title-click'): void
 }>()
 
 const router = useRouter()
