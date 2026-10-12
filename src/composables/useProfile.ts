@@ -14,7 +14,7 @@ const isShareMode = ref(false) // 是否为访客分享模式 (无修改权限)
 
 export function useProfile() {
   const isExpired = computed(() => {
-    return profile.value.expire_time > 0 && Date.now() > profile.value.expire_time
+    return isShareMode.value && profile.value.expire_time > 0 && Date.now() > profile.value.expire_time
   })
 
   const hasData = computed(() => {
@@ -28,10 +28,15 @@ export function useProfile() {
     try {
       const urlInfo = parseDataFromUrl()
 
-      // 只要链接携带分享标记，或当前会话已被标记为访客，彻底锁定只读模式
-      if (urlInfo?.isFromShare || sessionStorage.getItem(SHARE_SESSION_KEY) === '1') {
+      // 只要链接携带分享标记，或当前会话已被标记为访客且带有数据源，锁定只读模式；无参数直接访问则清理访客标记
+      if (urlInfo?.isFromShare) {
         isShareMode.value = true
         sessionStorage.setItem(SHARE_SESSION_KEY, '1')
+      } else if (sessionStorage.getItem(SHARE_SESSION_KEY) === '1' && (urlInfo?.id || urlInfo?.data)) {
+        isShareMode.value = true
+      } else if (!urlInfo) {
+        isShareMode.value = false
+        sessionStorage.removeItem(SHARE_SESSION_KEY)
       }
 
       if (urlInfo?.data) {

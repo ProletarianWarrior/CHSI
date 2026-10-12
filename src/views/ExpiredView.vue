@@ -20,7 +20,8 @@ import NavBar from '../components/NavBar.vue'
 
 const router = useRouter()
 const goHome = () => {
-  router.push('/')
+  sessionStorage.removeItem('chsi_share_visitor')
+  window.location.href = '/#/'
 }
 </script>
 

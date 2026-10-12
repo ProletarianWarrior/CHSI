@@ -58,6 +58,7 @@
             <select v-model="formData.academic_qualification" class="form-select">
               <option value="本科">本科</option>
               <option value="专科">专科</option>
+              <option value="硕士研究生">硕士研究生</option>
               <option value="第二学士学位">第二学士学位</option>
             </select>
           </div>
