@@ -8,7 +8,7 @@
     </div>
 
     <!-- 本科/研究生 Tab 切换 (若填写了研究生信息) -->
-    <div v-if="profile.has_grad" class="level-tabs">
+    <div v-if="profile.has_grad || (profile.grad_school && profile.grad_major)" class="level-tabs">
       <div
         class="level-tab"
         :class="{ active: currentTab === 'ug' }"
@@ -59,9 +59,9 @@
 
         <!-- 姓名与生日 -->
         <div class="name-area2">
-          <div class="person-name2">{{ profile.name || '--' }}</div>
+          <div class="person-name2">{{ profile.name || '' }}</div>
           <div class="person-extra2">
-            <span class="person-gender2">{{ profile.gender || '--' }}</span>
+            <span class="person-gender2">{{ profile.gender || '' }}</span>
             <span class="person-birth2">{{ birthDateStr }}</span>
           </div>
         </div>
@@ -83,8 +83,8 @@
       <!-- 研究生专属扩展标签 -->
       <div v-if="currentTab === 'grad'" class="grad-extra-row">
         <span v-if="profile.grad_degree_type" class="grad-extra-tag">{{ profile.grad_degree_type }}</span>
+        <span v-if="currentType" class="grad-extra-tag">{{ currentType }}</span>
         <span v-if="profile.grad_enroll_type" class="grad-extra-tag">{{ profile.grad_enroll_type }}</span>
-        <span v-if="profile.grad_supervisor" class="grad-extra-tag">导师: {{ profile.grad_supervisor }}</span>
       </div>
     </div>
 
@@ -96,59 +96,59 @@
       </div>
       <div class="info-row2">
         <span class="info-label2">证件号码</span>
-        <span class="info-value2">{{ profile.id_number || '--' }}</span>
+        <span class="info-value2">{{ profile.id_number || '' }}</span>
       </div>
-      <div class="info-row2">
-        <span class="info-label2">院校</span>
-        <span class="info-value2">{{ currentSchool }}</span>
-      </div>
-      <div class="info-row2">
-        <span class="info-label2">层次</span>
-        <span class="info-value2">{{ currentDegree }}</span>
-      </div>
-      <div class="info-row2">
-        <span class="info-label2">专业</span>
-        <span class="info-value2">{{ currentMajor }}</span>
-      </div>
-      <div class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">学制</span>
-        <span class="info-value2">{{ currentEduSys ? `${currentEduSys} 年` : '--' }}</span>
+        <span class="info-value2">{{ currentEduSys ? `${currentEduSys}年制` : '' }}</span>
       </div>
-      <div class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">学历类别</span>
-        <span class="info-value2">{{ currentTab === 'grad' ? '研究生' : (profile.xllb || '普通高等教育') }}</span>
+        <span class="info-value2">{{ currentTab === 'grad' ? '研究生教育' : (profile.xllb || '普通高等教育') }}</span>
       </div>
-      <div class="info-row2">
-        <span class="info-label2">学习形式</span>
-        <span class="info-value2">{{ currentType }}</span>
+      <div v-if="currentTab === 'grad'" class="info-row2 sm">
+        <span class="info-label2">研究方向</span>
+        <span class="info-value2">{{ profile.grad_research || '' }}</span>
       </div>
-      <div class="info-row2">
+      <div v-if="currentTab === 'grad'" class="info-row2 sm">
+        <span class="info-label2">指导教师</span>
+        <span class="info-value2">{{ profile.grad_supervisor || '' }}</span>
+      </div>
+      <div v-if="currentTab === 'grad'" class="info-row2 sm">
+        <span class="info-label2">入学方式</span>
+        <span class="info-value2">{{ profile.grad_enroll_type || '' }}</span>
+      </div>
+      <div v-if="currentTab === 'grad'" class="info-row2 sm">
+        <span class="info-label2">培养方式</span>
+        <span class="info-value2">{{ currentType || '' }}</span>
+      </div>
+      <div class="info-row2 sm">
         <span class="info-label2">院系</span>
-        <span class="info-value2">{{ currentFenyuan }}</span>
+        <span class="info-value2">{{ currentFenyuan || '' }}</span>
       </div>
-      <div v-if="currentTab === 'ug'" class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">系(所)</span>
-        <span class="info-value2">{{ profile.xisuo || '--' }}</span>
+        <span class="info-value2">{{ currentXisuo || '' }}</span>
       </div>
-      <div v-if="currentTab === 'ug'" class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">班级</span>
-        <span class="info-value2">{{ profile.banji || '--' }}</span>
+        <span class="info-value2">{{ currentBanji || '' }}</span>
       </div>
-      <div class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">学号</span>
-        <span class="info-value2">{{ currentXuehao }}</span>
+        <span class="info-value2">{{ currentXuehao || '' }}</span>
       </div>
-      <div class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">入学日期</span>
-        <span class="info-value2">{{ currentRuDate }}</span>
+        <span class="info-value2">{{ currentRuDate || '' }}</span>
       </div>
-      <div class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">预计毕业日期</span>
-        <span class="info-value2">{{ currentLiDate }}</span>
+        <span class="info-value2">{{ currentLiDate || '' }}</span>
       </div>
-      <div class="info-row2">
+      <div class="info-row2 sm">
         <span class="info-label2">学籍状态</span>
-        <span class="info-value2">{{ currentStatus }}</span>
+        <span class="info-value2">{{ currentStatus || '' }}</span>
       </div>
     </div>
 
@@ -182,27 +182,27 @@ const birthDateStr = computed(() => {
   if (d.id_number && d.id_number.length >= 14) {
     return `${d.id_number.substring(6, 10)}年${d.id_number.substring(10, 12)}月${d.id_number.substring(12, 14)}日`
   }
-  return '--'
+  return ''
 })
 
 const currentPhotoA = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_image_a || profile.value.image_a) : profile.value.image_a
+  return currentTab.value === 'grad' ? (profile.value.grad_image_a || profile.value.image_a || '') : (profile.value.image_a || '')
 })
 
 const currentPhotoB = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_image_b || profile.value.image_b) : profile.value.image_b
+  return currentTab.value === 'grad' ? (profile.value.grad_image_b || profile.value.image_b || '') : (profile.value.image_b || '')
 })
 
 const currentSchool = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_school || '--') : (profile.value.school || '--')
+  return currentTab.value === 'grad' ? (profile.value.grad_school || '') : (profile.value.school || '')
 })
 
 const currentDegree = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_level || '硕士') : (profile.value.academic_qualification || '本科')
+  return currentTab.value === 'grad' ? (profile.value.grad_level ? `${profile.value.grad_level}研究生` : '硕士研究生') : (profile.value.academic_qualification || '本科')
 })
 
 const currentMajor = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_major || '--') : (profile.value.major || '--')
+  return currentTab.value === 'grad' ? (profile.value.grad_major || '') : (profile.value.major || '')
 })
 
 const currentType = computed(() => {
@@ -210,15 +210,23 @@ const currentType = computed(() => {
 })
 
 const currentEduSys = computed(() => {
-  return currentTab.value === 'grad' ? profile.value.grad_educational_system : profile.value.educational_system
+  return currentTab.value === 'grad' ? (profile.value.grad_educational_system || '') : (profile.value.educational_system || '')
 })
 
 const currentFenyuan = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_fenyuan || '--') : (profile.value.fenyuan || '--')
+  return currentTab.value === 'grad' ? (profile.value.grad_fenyuan || '') : (profile.value.fenyuan || '')
+})
+
+const currentXisuo = computed(() => {
+  return currentTab.value === 'grad' ? (profile.value.grad_xisuo || '') : (profile.value.xisuo || '')
+})
+
+const currentBanji = computed(() => {
+  return currentTab.value === 'grad' ? (profile.value.grad_banji || '') : (profile.value.banji || '')
 })
 
 const currentXuehao = computed(() => {
-  return currentTab.value === 'grad' ? (profile.value.grad_xuehao || '--') : (profile.value.xuehao || '--')
+  return currentTab.value === 'grad' ? (profile.value.grad_xuehao || '') : (profile.value.xuehao || '')
 })
 
 const currentRuDate = computed(() => {
@@ -226,11 +234,11 @@ const currentRuDate = computed(() => {
   if (currentTab.value === 'grad') {
     return (d.grad_ru_nian && d.grad_ru_yue && d.grad_ru_ri)
       ? `${d.grad_ru_nian}年${String(d.grad_ru_yue).padStart(2, '0')}月${String(d.grad_ru_ri).padStart(2, '0')}日`
-      : '--'
+      : ''
   }
   return (d.ru_nian && d.ru_yue && d.ru_ri)
     ? `${d.ru_nian}年${String(d.ru_yue).padStart(2, '0')}月${String(d.ru_ri).padStart(2, '0')}日`
-    : '--'
+    : ''
 })
 
 const currentLiDate = computed(() => {
@@ -238,11 +246,11 @@ const currentLiDate = computed(() => {
   if (currentTab.value === 'grad') {
     return (d.grad_li_nian && d.grad_li_yue && d.grad_li_ri)
       ? `${d.grad_li_nian}年${String(d.grad_li_yue).padStart(2, '0')}月${String(d.grad_li_ri).padStart(2, '0')}日`
-      : '--'
+      : ''
   }
   return (d.li_nian && d.li_yue && d.li_ri)
     ? `${d.li_nian}年${String(d.li_yue).padStart(2, '0')}月${String(d.li_ri).padStart(2, '0')}日`
-    : '--'
+    : ''
 })
 
 const currentStatus = computed(() => {

@@ -36,13 +36,13 @@
         </div>
         <div class="info-card" id="ugXjCard" @click="goToXueji">
           <div class="info-card-top">
-            <span class="info-card-school">{{ profile.school || '--' }}</span>
+            <span class="info-card-school">{{ profile.school || '' }}</span>
             <span class="info-card-degree">{{ profile.academic_qualification || '本科' }}</span>
           </div>
           <div class="info-card-bottom">
-            <span class="info-card-major">{{ profile.major || '--' }}</span>
+            <span class="info-card-major">{{ profile.major || '' }}</span>
             <span class="info-card-dv"></span>
-            <span class="info-card-type">{{ profile.xltype || '--' }}</span>
+            <span class="info-card-type">{{ profile.xltype || '' }}</span>
           </div>
         </div>
       </div>
@@ -59,13 +59,13 @@
         </div>
         <div class="info-card" id="ugXlCard" @click="goToXueli">
           <div class="info-card-top">
-            <span class="info-card-school">{{ profile.school || '--' }}</span>
+            <span class="info-card-school">{{ profile.school || '' }}</span>
             <span class="info-card-degree">{{ profile.academic_qualification || '本科' }}</span>
           </div>
           <div class="info-card-bottom">
-            <span class="info-card-major">{{ profile.major || '--' }}</span>
+            <span class="info-card-major">{{ profile.major || '' }}</span>
             <span class="info-card-dv"></span>
-            <span class="info-card-type">{{ profile.xllb || '--' }}</span>
+            <span class="info-card-type">{{ profile.xllb || '' }}</span>
           </div>
         </div>
       </div>
@@ -83,44 +83,44 @@
     </div>
 
     <!-- 3. 研究生教育区块 (若填写了研究生数据) -->
-    <div v-if="profile.has_grad" class="edu-block" id="gradBlock">
+    <div v-if="profile.has_grad || (profile.grad_school && profile.grad_major)" class="edu-block" id="gradBlock">
       <div class="edu-block-header">
         <span class="edu-block-title" id="gradBlockTitle">研究生教育</span>
         <span class="edu-block-badge" id="gradBlockBadge">{{ profile.grad_level || '硕士' }}</span>
       </div>
 
-      <!-- 研究生学籍信息 -->
+      <!-- 研究生学籍信息 (色值与本科一致：绿色) -->
       <div class="info-sect">
         <div class="sect-header">
           <span class="sect-title">学籍信息</span>
           <span class="sect-count">(1)</span>
         </div>
-        <div class="info-card master-card" id="gradXjCard" @click="goToXueji">
+        <div class="info-card" id="gradXjCard" @click="goToXueji">
           <div class="info-card-top">
-            <span class="info-card-school">{{ profile.grad_school || '--' }}</span>
+            <span class="info-card-school">{{ profile.grad_school || '' }}</span>
             <span class="info-card-degree">{{ profile.grad_level || '硕士' }}</span>
           </div>
           <div class="info-card-bottom">
-            <span class="info-card-major">{{ profile.grad_major || '--' }}</span>
+            <span class="info-card-major">{{ profile.grad_major || '' }}</span>
             <span class="info-card-dv"></span>
             <span class="info-card-type">{{ profile.grad_train_mode || '全日制' }}</span>
           </div>
         </div>
       </div>
 
-      <!-- 研究生学历信息 -->
+      <!-- 研究生学历信息 (色值与本科一致：蓝色) -->
       <div class="info-sect">
         <div class="sect-header">
           <span class="sect-title">学历信息</span>
           <span class="sect-count">(1)</span>
         </div>
-        <div class="info-card master-card" id="gradXlCard" @click="goToXueji">
+        <div class="info-card" id="gradXlCard" @click="goToXueji">
           <div class="info-card-top">
-            <span class="info-card-school">{{ profile.grad_school || '--' }}</span>
+            <span class="info-card-school">{{ profile.grad_school || '' }}</span>
             <span class="info-card-degree">{{ profile.grad_level || '硕士' }}</span>
           </div>
           <div class="info-card-bottom">
-            <span class="info-card-major">{{ profile.grad_major || '--' }}</span>
+            <span class="info-card-major">{{ profile.grad_major || '' }}</span>
             <span class="info-card-dv"></span>
             <span class="info-card-type">{{ profile.grad_train_mode || '全日制' }}</span>
           </div>

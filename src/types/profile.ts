@@ -48,6 +48,8 @@ export interface StudentProfile {
   grad_research: string
   grad_supervisor: string
   grad_fenyuan: string
+  grad_xisuo?: string
+  grad_banji?: string
   grad_xuehao: string
   grad_ru_nian: number | string
   grad_ru_yue: number | string
@@ -109,6 +111,8 @@ export const createDefaultProfile = (): StudentProfile => ({
   grad_research: '',
   grad_supervisor: '',
   grad_fenyuan: '',
+  grad_xisuo: '',
+  grad_banji: '',
   grad_xuehao: '',
   grad_zhuangtai: '在籍(注册学籍)',
   grad_ru_nian: '',

@@ -16,23 +16,23 @@
         </div>
 
         <div class="name-area2">
-          <div class="person-name2">{{ profile.name || '--' }}</div>
+          <div class="person-name2">{{ profile.name || '' }}</div>
           <div class="person-extra2">
-            <span class="person-gender2">{{ profile.gender || '--' }}</span>
+            <span class="person-gender2">{{ profile.gender || '' }}</span>
             <span class="person-birth2">{{ birthDateStr }}</span>
           </div>
         </div>
       </div>
 
       <div class="school-row2">
-        <span class="school-name2">{{ profile.school || '--' }}</span>
+        <span class="school-name2">{{ profile.school || '' }}</span>
         <span class="school-degree2">{{ profile.academic_qualification || '本科' }}</span>
       </div>
 
       <div class="major-row2">
-        <span class="major-name2">{{ profile.major || '--' }}</span>
+        <span class="major-name2">{{ profile.major || '' }}</span>
         <span class="major-dv2"></span>
-        <span class="major-type2">{{ profile.xltype || '--' }}</span>
+        <span class="major-type2">{{ profile.xltype || '' }}</span>
       </div>
     </div>
 
@@ -52,7 +52,7 @@
       </div>
       <div class="info-row2">
         <span class="info-label2">学制</span>
-        <span class="info-value2">{{ profile.educational_system ? `${profile.educational_system} 年` : '--' }}</span>
+        <span class="info-value2">{{ profile.educational_system ? `${profile.educational_system} 年` : '' }}</span>
       </div>
       <div class="info-row2">
         <span class="info-label2">毕（结）业</span>
@@ -60,11 +60,11 @@
       </div>
       <div class="info-row2">
         <span class="info-label2">校（院）长姓名</span>
-        <span class="info-value2">{{ profile.principal || '--' }}</span>
+        <span class="info-value2">{{ profile.principal || '' }}</span>
       </div>
       <div class="info-row2">
         <span class="info-label2">证书编号</span>
-        <span class="info-value2">{{ profile.degree_cert || profile.diploma_no || '--' }}</span>
+        <span class="info-value2">{{ profile.degree_cert || profile.diploma_no || '' }}</span>
       </div>
     </div>
 
@@ -95,21 +95,21 @@ const birthDateStr = computed(() => {
   if (d.id_number && d.id_number.length >= 14) {
     return `${d.id_number.substring(6, 10)}年${d.id_number.substring(10, 12)}月${d.id_number.substring(12, 14)}日`
   }
-  return '--'
+  return ''
 })
 
 const ruDateStr = computed(() => {
   const d = profile.value
   return (d.ru_nian && d.ru_yue && d.ru_ri)
     ? `${d.ru_nian}年${String(d.ru_yue).padStart(2, '0')}月${String(d.ru_ri).padStart(2, '0')}日`
-    : '--'
+    : ''
 })
 
 const biYeDateStr = computed(() => {
   const d = profile.value
   return (d.li_nian && d.li_yue && d.li_ri)
     ? `${d.li_nian}年${String(d.li_yue).padStart(2, '0')}月${String(d.li_ri).padStart(2, '0')}日`
-    : '--'
+    : ''
 })
 
 const handleOpenReport = () => {

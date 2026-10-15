@@ -153,16 +153,16 @@
       </div>
 
       <!-- 3. 研究生信息 (可选折叠) -->
-      <div class="toggle-section" :class="{ open: formData.has_grad }">
-        <div class="toggle-header" @click="formData.has_grad = !formData.has_grad">
+      <div class="toggle-section" :class="{ open: isGradOpen }">
+        <div class="toggle-header" @click="toggleGradSection">
           <div class="toggle-header-left">
             <span class="toggle-title">📚 {{ formData.grad_level || '硕士' }}研究生信息 (可选)</span>
-            <span class="toggle-hint">{{ formData.has_grad ? '点击收起' : '点击展开填写' }}</span>
+            <span class="toggle-hint">{{ isGradOpen ? '点击收起' : '点击展开填写' }}</span>
           </div>
           <div class="toggle-arrow">▶</div>
         </div>
 
-        <div v-if="formData.has_grad" class="toggle-body">
+        <div v-show="isGradOpen" class="toggle-body">
           <div class="grad-type-tabs">
             <div
               class="grad-type-tab"
@@ -207,6 +207,39 @@
 
           <div class="form-row">
             <div class="form-group">
+              <label class="form-label">研究方向</label>
+              <input v-model="formData.grad_research" class="form-input" placeholder="例如: 机器学习与计算机视觉" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">入学方式</label>
+              <input v-model="formData.grad_enroll_type" class="form-input" placeholder="例如: 全国统考 / 推荐免试" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">院系</label>
+              <input v-model="formData.grad_fenyuan" class="form-input" placeholder="例如: 计算机科学与技术系" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">系(所)</label>
+              <input v-model="formData.grad_xisuo" class="form-input" placeholder="例如: 智能科学与技术所" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">班级</label>
+              <input v-model="formData.grad_banji" class="form-input" placeholder="例如: 硕2401班" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">研究生学号</label>
+              <input v-model="formData.grad_xuehao" class="form-input" placeholder="例如: 202420757" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
               <label class="form-label">培养模式</label>
               <select v-model="formData.grad_train_mode" class="form-select">
                 <option value="全日制">全日制</option>
@@ -227,9 +260,53 @@
               <label class="form-label">学制 (年)</label>
               <input v-model="formData.grad_educational_system" class="form-input" placeholder="3" />
             </div>
+          </div>
+
+          <div class="form-row">
             <div class="form-group">
-              <label class="form-label">研究生学号</label>
-              <input v-model="formData.grad_xuehao" class="form-input" placeholder="20240901" />
+              <label class="form-label">研究生入学年份/月/日</label>
+              <div class="date-row">
+                <input v-model="formData.grad_ru_nian" type="number" class="form-input date-input" placeholder="年" />
+                <input v-model="formData.grad_ru_yue" type="number" class="form-input date-input" placeholder="月" />
+                <input v-model="formData.grad_ru_ri" type="number" class="form-input date-input" placeholder="日" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">预计毕业日期</label>
+              <div class="date-row">
+                <input v-model="formData.grad_li_nian" type="number" class="form-input date-input" placeholder="年" />
+                <input v-model="formData.grad_li_yue" type="number" class="form-input date-input" placeholder="月" />
+                <input v-model="formData.grad_li_ri" type="number" class="form-input date-input" placeholder="日" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label class="form-label">研究生专属照片 (可选，未上传默认复用下方本科录取/学历照片)</label>
+            <div class="photo-upload-grid" style="margin-top: 6px;">
+              <div class="photo-uploader">
+                <div class="uploader-preview" @click="triggerUpload('inputGradPhotoA')">
+                  <img v-if="formData.grad_image_a" :src="formData.grad_image_a" alt="研究生录取照片" />
+                  <div v-else class="uploader-placeholder">
+                    <span>+</span>
+                    <span class="txt">研究生录取照</span>
+                  </div>
+                </div>
+                <input id="inputGradPhotoA" type="file" accept="image/*" class="hide-file" @change="e => handleFileSelect(e, 'grad_image_a')" />
+                <div class="uploader-label">研究生录取照片 (可选)</div>
+              </div>
+
+              <div class="photo-uploader">
+                <div class="uploader-preview" @click="triggerUpload('inputGradPhotoB')">
+                  <img v-if="formData.grad_image_b" :src="formData.grad_image_b" alt="研究生学历照片" />
+                  <div v-else class="uploader-placeholder">
+                    <span>+</span>
+                    <span class="txt">研究生学历照</span>
+                  </div>
+                </div>
+                <input id="inputGradPhotoB" type="file" accept="image/*" class="hide-file" @change="e => handleFileSelect(e, 'grad_image_b')" />
+                <div class="uploader-label">研究生学历照片 (可选)</div>
+              </div>
             </div>
           </div>
         </div>
@@ -343,6 +420,12 @@ const { profile, setProfile } = useProfile()
 // 复制一份供表单编辑
 const formData = ref<StudentProfile>({ ...profile.value })
 
+const isGradOpen = ref(formData.value.has_grad || !!(formData.value.grad_school || formData.value.grad_major))
+
+const toggleGradSection = () => {
+  isGradOpen.value = !isGradOpen.value
+}
+
 const shareVisible = ref(false)
 const shortUrl = ref('')
 const fullUrl = ref('')
@@ -371,7 +454,7 @@ const triggerUpload = (id: string) => {
 }
 
 // 纯前端 Canvas 保真等比压缩 (严格保持原图比例，仅优化画质体积)
-const handleFileSelect = (e: Event, field: 'image_a' | 'image_b') => {
+const handleFileSelect = (e: Event, field: 'image_a' | 'image_b' | 'grad_image_a' | 'grad_image_b') => {
   const inputEl = e.target as HTMLInputElement
   const file = inputEl.files?.[0]
   if (!file) return
@@ -435,6 +518,11 @@ const normalizeDates = () => {
   if (formData.value.grad_ru_ri) formData.value.grad_ru_ri = pad(formData.value.grad_ru_ri)
   if (formData.value.grad_li_yue) formData.value.grad_li_yue = pad(formData.value.grad_li_yue)
   if (formData.value.grad_li_ri) formData.value.grad_li_ri = pad(formData.value.grad_li_ri)
+
+  // 智能保障：如果填写了研究生学校或专业，自动确保 has_grad 为 true，防止折叠误伤
+  if (formData.value.grad_school || formData.value.grad_major) {
+    formData.value.has_grad = true
+  }
 }
 
 const saveAndPreview = () => {

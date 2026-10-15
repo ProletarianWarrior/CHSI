@@ -182,29 +182,29 @@
   color: #f0f0f0;
   flex-shrink: 0;
 }
-#ugXjCard {
+#ugXjCard, #gradXjCard {
   background: #26ae81 !important;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 3px 10px rgba(38, 174, 129, 0.25);
 }
-#ugXjCard .info-card-top {
+#ugXjCard .info-card-top, #gradXjCard .info-card-top {
   background: #26ae81 !important;
 }
-#ugXjCard .info-card-bottom {
+#ugXjCard .info-card-bottom, #gradXjCard .info-card-bottom {
   background: #26ae81 !important;
 }
 
-#ugXlCard {
+#ugXlCard, #gradXlCard {
   background: #56a2f6 !important;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 3px 10px rgba(86, 162, 246, 0.25);
 }
-#ugXlCard .info-card-top {
+#ugXlCard .info-card-top, #gradXlCard .info-card-top {
   background: #56a2f6 !important;
 }
-#ugXlCard .info-card-bottom {
+#ugXlCard .info-card-bottom, #gradXlCard .info-card-bottom {
   background: #56a2f6 !important;
 }
 
